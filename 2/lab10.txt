@@ -1,0 +1,282 @@
+#include <iostream>
+#include <math.h>
+#include <iomanip>
+using namespace std;
+struct list
+{
+	char a;
+	list* next;
+	list* prev;
+};
+
+class listc
+{
+protected:
+	list *head, *tail;
+	int length;
+public:
+	listc(int i) : head(NULL), tail(NULL)
+	{
+		length = 0;
+		push(i);
+	}
+	listc() : head(NULL), tail(NULL)
+	{
+		length = 0;
+	}
+	void setLength(int x)
+	{
+		if (x == 0) length = 0;
+		else length += x;
+	}
+	void setHead(list* x)
+	{
+		head = x;
+	}
+	void setTail(list* x)
+	{
+		tail = x;
+	}
+	int getLength()
+	{
+		return length;
+	}
+	list* getHead()
+	{
+		return head;
+	}
+	list* getTail()
+	{
+		return tail;
+	}
+	void push(char i)
+	{
+		length++;
+
+		if (head == NULL)
+		{
+			struct list* tmp = new list;
+			tmp->a = i;
+			tmp->next = NULL;
+			tmp->prev = NULL;
+			head = tmp;
+			tail = tmp;
+		}
+		else
+		{
+			struct list* tmp = new list;
+			tmp->a = i;
+			tmp->next = NULL;
+			tmp->prev = tail;
+			tail->next = tmp;
+			tail = tmp;
+		}
+	}
+	void output()
+	{
+		struct list* tmp = head;
+		if (tmp == NULL) cout << "List is empty" << endl;
+		else
+		{
+			try
+			{
+				while (1)
+				{
+					cout << (int)tmp->a << " ";
+					tmp = tmp->next;
+					if (tmp == NULL) throw 1;
+				}
+			}
+			catch (int i)
+			{
+			};
+			cout << endl;
+		}
+	}
+	void DeleteList()
+	{
+		list* tmp = getHead();
+		while (tmp != NULL)
+		{
+			setHead(tmp->next);
+			delete tmp;
+			tmp = getHead();
+		}
+	}
+};
+int log1(int b)
+{
+	if (b > 1)
+	{
+		return 1 + log1(b / 2);
+	}
+	else if (b==0) return 1;
+    else return 1;
+}
+void mleft(int *b, int n)
+{
+	if (b)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			b[i] = b[i + 1];
+		}
+	}
+}
+void mright(int *b, int n)
+{
+	if (b)
+	{
+		for (int i = n-1; i > n; i--)
+		{
+			b[i+1] = b[i];
+		}
+	}
+}
+void FV(int *a, int n, listc *b, int l_p)
+{
+	int tmpv, tmp;
+	for (int i = 0; i < n; i++)
+	{
+		tmpv = log1(a[i]);
+		tmp = a[i];
+		for (int j = 0; j < l_p; j++)
+		{
+			if ((tmpv % (int)(pow(2, (l_p-1) - j))) == tmpv)
+			{
+				b[i].push(0);
+			}
+			else b[i].push(1);
+			tmpv = (tmpv % (int)(pow(2, (l_p-1) - j)));
+		}
+		tmpv = log1(a[i])-1;
+		if (tmpv>=0)tmp = (tmp % (int)(pow(2, tmpv)));
+		tmpv--;
+		while (tmpv>=0)
+		{
+			if ((tmp % (int)(pow(2, tmpv))) == tmp)
+			{
+				b[i].push(0);
+			}
+			else b[i].push(1);
+			tmp = (tmp % (int)(pow(2, tmpv)));
+			tmpv--;
+		}
+	}
+}
+void VVY(int *a, int n, listc *b)
+{
+
+	int tmpv, tmp;
+	for (int i = 0; i < n; i++)
+	{
+		tmpv = log1(a[i]);
+		tmp = a[i];
+		for (int j = 0; j < tmpv-1; j++)
+		{
+				b[i].push(0);
+		}
+		tmpv = log1(a[i]) - 1;
+		while (tmpv >= 0)
+		{
+			if ((tmp % (int)(pow(2, tmpv))) == tmp)
+			{
+				b[i].push(0);
+			}
+			else b[i].push(1);
+			tmp = (tmp % (int)(pow(2, tmpv)));
+			tmpv--;
+		}
+	}
+}
+void VVW_rec(listc &b, int k)
+{
+		if (k > 1)
+		{
+			VVW_rec(b, log1(k)-1);
+			int tmp = log1(k)-1;
+		//	cout << tmp << endl;
+			while (tmp>= 0)
+			{
+				//cout << k;
+				if ((k % (int)(pow(2, tmp))) == k)
+				{
+					b.push(0);
+				}
+				else b.push(1);
+				k = (k % (int)(pow(2, tmp)));
+				tmp--;
+			}
+		}
+}
+void VVW(int *a, int n, listc *b)
+{
+	int tmpv, tmp, k;
+	if ((n >= 2)) b[1].push(0);
+	for (int i = 2; i < n; i++)
+	{
+		tmpv = log1(a[i]);
+		tmp = a[i];
+		tmpv = log1(a[i]) - 1;
+		//cout << (int)a[i] << " " << tmpv << endl;
+		VVW_rec(b[i], tmpv);
+		while (tmpv >= 0)
+		{
+			if ((tmp % (int)(pow(2, tmpv))) == tmp)
+			{
+				b[i].push(0);
+			}
+			else b[i].push(1);
+			tmp = (tmp % (int)(pow(2, tmpv)));
+			tmpv--;
+		}
+		b[i].push(0);
+	}
+}
+void output(int *a, int n)
+{
+	for (int i = 0; i < n; i++)
+		cout << (int)a[i] << " ";
+	cout << endl;
+}
+void output(int **a, int n, int nn)
+{
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < nn; j++)
+			cout << (int)a[i][j];
+		cout << endl;
+	}
+}
+int main()
+{
+	const int N = 100000, l_p = 4;
+	int *a;
+	listc *b, *c, *d;
+	a = new int[N];
+	b = new listc[N];
+	c = new listc[N];
+	d = new listc[N];
+	for (int i = 0; i < N; i++)
+		a[i] = i;
+	FV(a, N, b, 4);
+	VVY(a, N, c);
+	VVW(a, N, d);
+	/*for (int i = 0; i < N; i++)
+	{
+		b[i].output();
+	}
+	cout << endl;
+	for (int i = 0; i < N; i++)
+	{
+		c[i].output();
+	}*/
+	cout << endl;
+	for (int i = 0; i < N; i++)
+	{
+		cout << i << " || ";
+		d[i].output();
+	}
+	system("PAUSE");
+    return 0;
+}
